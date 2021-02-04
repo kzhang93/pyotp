@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>pyotp.totp &#8212; PyOTP  documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" accesskey="U">pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    ../../index.html" class="text-logo">PyOTP</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+                <li><a href="../pyotp.html">pyotp</a></li>
+              
+              <li>pyotp.totp</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for pyotp.totp</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.otp</span> <span class="k">import</span> <span class="n">OTP</span>
+
+
+<div class="viewcode-block" id="TOTP"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP">[docs]</a><span class="k">class</span> <span class="nc">TOTP</span><span class="p">(</span><span class="n">OTP</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler for time-based OTP counters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">digest</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">issuer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param s: secret in base32 format</span>
+<span class="sd">        :param interval: the time interval in seconds for OTP. This defaults to 30.</span>
+<span class="sd">        :param digits: number of integers in the OTP. Some apps expect this to be 6 digits, others support more.</span>
+<span class="sd">        :param digest: digest function to use in the HMAC (expected to be sha1)</span>
+<span class="sd">        :param name: account name</span>
+<span class="sd">        :param issuer: issuer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="n">digits</span><span class="p">,</span> <span class="n">digest</span><span class="o">=</span><span class="n">digest</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">issuer</span><span class="o">=</span><span class="n">issuer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TOTP.at"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP.at">[docs]</a>    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">],</span> <span class="n">counter_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts either a Unix timestamp integer or a datetime object.</span>
+
+<span class="sd">        To get the time until the next timecode change (seconds until the current OTP expires), use this instead::</span>
+
+<span class="sd">            totp = pyotp.TOTP(...)</span>
+<span class="sd">            time_remaining = totp.interval - datetime.datetime.now().timestamp() % totp.interval</span>
+
+<span class="sd">        :param for_time: the time to generate an OTP for</span>
+<span class="sd">        :param counter_offset: the amount of ticks to add to the time counter</span>
+<span class="sd">        :returns: OTP value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">for_time</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">for_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">for_time</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_otp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timecode</span><span class="p">(</span><span class="n">for_time</span><span class="p">)</span> <span class="o">+</span> <span class="n">counter_offset</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TOTP.now"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the current time OTP</span>
+
+<span class="sd">        :returns: OTP value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_otp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timecode</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="TOTP.verify"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">for_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">valid_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the OTP passed in against the current time OTP.</span>
+
+<span class="sd">        :param otp: the OTP to check against</span>
+<span class="sd">        :param for_time: Time to check OTP at (defaults to now)</span>
+<span class="sd">        :param valid_window: extends the validity to this many counter ticks before and after the current one</span>
+<span class="sd">        :returns: True if verification succeeded, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">for_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">for_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">valid_window</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">valid_window</span><span class="p">,</span> <span class="n">valid_window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">strings_equal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">otp</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">for_time</span><span class="p">,</span> <span class="n">i</span><span class="p">))):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">strings_equal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">otp</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">for_time</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="TOTP.provisioning_uri"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP.provisioning_uri">[docs]</a>    <span class="k">def</span> <span class="nf">provisioning_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">issuer_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the provisioning URI for the OTP.  This can then be</span>
+<span class="sd">        encoded in a QR Code and used to provision an OTP app like</span>
+<span class="sd">        Google Authenticator.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            https://github.com/google/google-authenticator/wiki/Key-Uri-Format</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">build_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                               <span class="n">issuer</span><span class="o">=</span><span class="n">issuer_name</span> <span class="k">if</span> <span class="n">issuer_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">issuer</span><span class="p">,</span>
+                               <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                               <span class="n">digits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TOTP.timecode"><a class="viewcode-back" href="../../index.html#pyotp.totp.TOTP.timecode">[docs]</a>    <span class="k">def</span> <span class="nf">timecode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts either a timezone naive (`for_time.tzinfo is None`) or</span>
+<span class="sd">        a timezone aware datetime as argument and returns the</span>
+<span class="sd">        corresponding counter value (timecode).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">for_time</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">calendar</span><span class="o">.</span><span class="n">timegm</span><span class="p">(</span><span class="n">for_time</span><span class="o">.</span><span class="n">utctimetuple</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">for_time</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" >pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright PyOTP contributors. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

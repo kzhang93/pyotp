@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>pyotp.hotp &#8212; PyOTP  documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" accesskey="U">pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    ../../index.html" class="text-logo">PyOTP</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+                <li><a href="../pyotp.html">pyotp</a></li>
+              
+              <li>pyotp.hotp</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for pyotp.hotp</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.otp</span> <span class="k">import</span> <span class="n">OTP</span>
+
+
+<div class="viewcode-block" id="HOTP"><a class="viewcode-back" href="../../index.html#pyotp.hotp.HOTP">[docs]</a><span class="k">class</span> <span class="nc">HOTP</span><span class="p">(</span><span class="n">OTP</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler for HMAC-based OTP counters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">digest</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">issuer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">initial_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param s: secret in base32 format</span>
+<span class="sd">        :param initial_count: starting HMAC counter value, defaults to 0</span>
+<span class="sd">        :param digits: number of integers in the OTP. Some apps expect this to be 6 digits, others support more.</span>
+<span class="sd">        :param digest: digest function to use in the HMAC (expected to be sha1)</span>
+<span class="sd">        :param name: account name</span>
+<span class="sd">        :param issuer: issuer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_count</span> <span class="o">=</span> <span class="n">initial_count</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="n">digits</span><span class="p">,</span> <span class="n">digest</span><span class="o">=</span><span class="n">digest</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">issuer</span><span class="o">=</span><span class="n">issuer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HOTP.at"><a class="viewcode-back" href="../../index.html#pyotp.hotp.HOTP.at">[docs]</a>    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates the OTP for the given count.</span>
+
+<span class="sd">        :param count: the OTP HMAC counter</span>
+<span class="sd">        :returns: OTP</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_otp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_count</span> <span class="o">+</span> <span class="n">count</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HOTP.verify"><a class="viewcode-back" href="../../index.html#pyotp.hotp.HOTP.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">counter</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies the OTP passed in against the current counter OTP.</span>
+
+<span class="sd">        :param otp: the OTP to check against</span>
+<span class="sd">        :param counter: the OTP HMAC counter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">strings_equal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">otp</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">counter</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="HOTP.provisioning_uri"><a class="viewcode-back" href="../../index.html#pyotp.hotp.HOTP.provisioning_uri">[docs]</a>    <span class="k">def</span> <span class="nf">provisioning_uri</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">initial_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">issuer_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the provisioning URI for the OTP.  This can then be</span>
+<span class="sd">        encoded in a QR Code and used to provision an OTP app like</span>
+<span class="sd">        Google Authenticator.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">            https://github.com/google/google-authenticator/wiki/Key-Uri-Format</span>
+
+<span class="sd">        :param name: name of the user account</span>
+<span class="sd">        :param initial_count: starting HMAC counter value, defaults to 0</span>
+<span class="sd">        :param issuer_name: the name of the OTP issuer; this will be the</span>
+<span class="sd">            organization title of the OTP entry in Authenticator</span>
+<span class="sd">        :returns: provisioning URI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">build_uri</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">initial_count</span><span class="o">=</span><span class="n">initial_count</span> <span class="k">if</span> <span class="n">initial_count</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_count</span><span class="p">,</span>
+            <span class="n">issuer</span><span class="o">=</span><span class="n">issuer_name</span> <span class="k">if</span> <span class="n">issuer_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">issuer</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">digits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" >pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright PyOTP contributors. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

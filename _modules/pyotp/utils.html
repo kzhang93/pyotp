@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="../../_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>pyotp.utils &#8212; PyOTP  documentation</title>
+    <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" accesskey="U">pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    ../../index.html" class="text-logo">PyOTP</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="../../search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="../../index.html">Docs</a></li>
+              
+                <li><a href="../index.html">Module code</a></li>
+              
+                <li><a href="../pyotp.html">pyotp</a></li>
+              
+              <li>pyotp.utils</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <h1>Source code for pyotp.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unicodedata</span>
+<span class="kn">from</span> <span class="nn">hmac</span> <span class="k">import</span> <span class="n">compare_digest</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">quote</span><span class="p">,</span> <span class="n">urlencode</span><span class="p">,</span> <span class="n">urlparse</span>
+
+
+<div class="viewcode-block" id="build_uri"><a class="viewcode-back" href="../../index.html#pyotp.utils.build_uri">[docs]</a><span class="k">def</span> <span class="nf">build_uri</span><span class="p">(</span><span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initial_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">issuer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">algorithm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">digits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the provisioning URI for the OTP; works for either TOTP or HOTP.</span>
+
+<span class="sd">    This can then be encoded in a QR Code and used to provision the Google</span>
+<span class="sd">    Authenticator app.</span>
+
+<span class="sd">    For module-internal use.</span>
+
+<span class="sd">    See also:</span>
+<span class="sd">        https://github.com/google/google-authenticator/wiki/Key-Uri-Format</span>
+
+<span class="sd">    :param secret: the hotp/totp secret used to generate the URI</span>
+<span class="sd">    :param name: name of the account</span>
+<span class="sd">    :param initial_count: starting counter value, defaults to None.</span>
+<span class="sd">        If none, the OTP type will be assumed as TOTP.</span>
+<span class="sd">    :param issuer: the name of the OTP issuer; this will be the</span>
+<span class="sd">        organization title of the OTP entry in Authenticator</span>
+<span class="sd">    :param algorithm: the algorithm used in the OTP generation.</span>
+<span class="sd">    :param digits: the length of the OTP generated code.</span>
+<span class="sd">    :param period: the number of seconds the OTP generator is set to</span>
+<span class="sd">        expire every code.</span>
+<span class="sd">    :param image: optional logo image url</span>
+<span class="sd">    :returns: provisioning uri</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># initial_count may be 0 as a valid param</span>
+    <span class="n">is_initial_count_present</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Handling values different from defaults</span>
+    <span class="n">is_algorithm_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">algorithm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">algorithm</span> <span class="o">!=</span> <span class="s1">&#39;sha1&#39;</span><span class="p">)</span>
+    <span class="n">is_digits_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">digits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">digits</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">is_period_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">period</span> <span class="o">!=</span> <span class="mi">30</span><span class="p">)</span>
+
+    <span class="n">otp_type</span> <span class="o">=</span> <span class="s1">&#39;hotp&#39;</span> <span class="k">if</span> <span class="n">is_initial_count_present</span> <span class="k">else</span> <span class="s1">&#39;totp&#39;</span>
+    <span class="n">base_uri</span> <span class="o">=</span> <span class="s1">&#39;otpauth://</span><span class="si">{0}</span><span class="s1">/</span><span class="si">{1}</span><span class="s1">?</span><span class="si">{2}</span><span class="s1">&#39;</span>
+
+    <span class="n">url_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;secret&#39;</span><span class="p">:</span> <span class="n">secret</span><span class="p">}</span>  <span class="c1"># type: Dict[str, Union[None, int, str]]</span>
+
+    <span class="n">label</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">issuer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">issuer</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">label</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;issuer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">issuer</span>
+
+    <span class="k">if</span> <span class="n">is_initial_count_present</span><span class="p">:</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;counter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">initial_count</span>
+    <span class="k">if</span> <span class="n">is_algorithm_set</span><span class="p">:</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">is_digits_set</span><span class="p">:</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;digits&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">digits</span>
+    <span class="k">if</span> <span class="n">is_period_set</span><span class="p">:</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">period</span>
+    <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+        <span class="n">image_uri</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">image_uri</span><span class="o">.</span><span class="n">scheme</span> <span class="o">!=</span> <span class="s1">&#39;https&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">image_uri</span><span class="o">.</span><span class="n">netloc</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">image_uri</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid url&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_uri</span><span class="p">))</span>
+        <span class="n">url_args</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span>
+
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">base_uri</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">otp_type</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">url_args</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;%20&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">uri</span></div>
+
+
+<div class="viewcode-block" id="strings_equal"><a class="viewcode-back" href="../../index.html#pyotp.utils.strings_equal">[docs]</a><span class="k">def</span> <span class="nf">strings_equal</span><span class="p">(</span><span class="n">s1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Timing-attack resistant string comparison.</span>
+
+<span class="sd">    Normal comparison using == will short-circuit on the first mismatching</span>
+<span class="sd">    character. This avoids that by scanning the whole string, though we</span>
+<span class="sd">    still reveal to a timing attack whether the strings are the same</span>
+<span class="sd">    length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s1">&#39;NFKC&#39;</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s1">&#39;NFKC&#39;</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">compare_digest</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">s2</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PyOTP  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pyotp.html" >pyotp</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="../../_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright PyOTP contributors. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

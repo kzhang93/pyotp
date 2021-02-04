@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>PyOTP - The Python One-Time Password Library &#8212; PyOTP  documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyOTP  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    #" class="text-logo">PyOTP</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Contents</h2>
+    <div class="sidebar-localtoc">
+      <ul>
+<li><a class="reference internal" href="#">PyOTP - The Python One-Time Password Library</a><ul>
+<li><a class="reference internal" href="#quick-overview-of-using-one-time-passwords-on-your-phone">Quick overview of using One Time Passwords on your phone</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#time-based-otps">Time-based OTPs</a></li>
+<li><a class="reference internal" href="#counter-based-otps">Counter-based OTPs</a></li>
+<li><a class="reference internal" href="#generating-a-secret-key">Generating a Secret Key</a></li>
+<li><a class="reference internal" href="#google-authenticator-compatible">Google Authenticator Compatible</a></li>
+<li><a class="reference internal" href="#working-example">Working example</a></li>
+<li><a class="reference internal" href="#links">Links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pyotp">API documentation</a></li>
+<li><a class="reference internal" href="#table-of-contents">Table of Contents</a></li>
+</ul>
+
+    </div>
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="#">Docs</a></li>
+              
+              <li>PyOTP - The Python One-Time Password Library</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="pyotp-the-python-one-time-password-library">
+<h1>PyOTP - The Python One-Time Password Library<a class="headerlink" href="#pyotp-the-python-one-time-password-library" title="Permalink to this headline">¶</a></h1>
+<p>PyOTP is a Python library for generating and verifying one-time passwords. It can be used to implement two-factor (2FA)
+or multi-factor (MFA) authentication methods in web applications and in other systems that require users to log in.</p>
+<p>Open MFA standards are defined in <a class="reference external" href="https://tools.ietf.org/html/rfc4226">RFC 4226</a> (HOTP: An HMAC-Based One-Time
+Password Algorithm) and in <a class="reference external" href="https://tools.ietf.org/html/rfc6238">RFC 6238</a> (TOTP: Time-Based One-Time Password
+Algorithm). PyOTP implements server-side support for both of these standards. Client-side support can be enabled by
+sending authentication codes to users over SMS or email (HOTP) or, for TOTP, by instructing users to use <a class="reference external" href="https://en.wikipedia.org/wiki/Google_Authenticator">Google
+Authenticator</a>, <a class="reference external" href="https://www.authy.com/">Authy</a>, or another
+compatible app. Users can set up auth tokens in their apps easily by using their phone camera to scan <a class="reference external" href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">otpauth://</a> QR codes provided by PyOTP.</p>
+<p>Implementers should read and follow the <a class="reference external" href="https://tools.ietf.org/html/rfc4226#section-7">HOTP security requirements</a>
+and <a class="reference external" href="https://tools.ietf.org/html/rfc6238#section-5">TOTP security considerations</a> sections of the relevant RFCs. At
+minimum, application implementers should follow this checklist:</p>
+<ul class="simple">
+<li><p>Ensure transport confidentiality by using HTTPS</p></li>
+<li><p>Ensure HOTP/TOTP secret confidentiality by storing secrets in a controlled access database</p></li>
+<li><p>Deny replay attacks by rejecting one-time passwords that have been used by the client (this requires storing the most
+recently authenticated timestamp, OTP, or hash of the OTP in your database, and rejecting the OTP when a match is seen)</p></li>
+<li><p>Throttle brute-force attacks against your application’s login functionality</p></li>
+<li><p>When implementing a “greenfield” application, consider supporting
+<a class="reference external" href="https://en.wikipedia.org/wiki/Universal_2nd_Factor">FIDO U2F</a>/<a class="reference external" href="https://www.w3.org/TR/webauthn/">WebAuthn</a> in
+addition to HOTP/TOTP. U2F uses asymmetric cryptography to avoid using a shared secret design, which strengthens your
+MFA solution against server-side attacks. Hardware U2F also sequesters the client secret in a dedicated single-purpose
+device, which strengthens your clients against client-side attacks. And by automating scoping of credentials to
+relying party IDs (application origin/domain names), U2F adds protection against phishing attacks. One implementation of
+FIDO U2F/WebAuthn is PyOTP’s sister project, <a class="reference external" href="https://github.com/pyauth/pywarp">PyWARP</a>.</p></li>
+</ul>
+<p>We also recommend that implementers read the
+<a class="reference external" href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authentication_Cheat_Sheet.md">OWASP Authentication Cheat Sheet</a> and
+<a class="reference external" href="https://pages.nist.gov/800-63-3/">NIST SP 800-63-3: Digital Authentication Guideline</a> for a high level overview of
+authentication best practices.</p>
+<div class="section" id="quick-overview-of-using-one-time-passwords-on-your-phone">
+<h2>Quick overview of using One Time Passwords on your phone<a class="headerlink" href="#quick-overview-of-using-one-time-passwords-on-your-phone" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>OTPs involve a shared secret, stored both on the phone and the server</p></li>
+<li><p>OTPs can be generated on a phone without internet connectivity</p></li>
+<li><p>OTPs should always be used as a second factor of authentication (if your phone is lost, you account is still secured with a password)</p></li>
+<li><p>Google Authenticator and other OTP client apps allow you to store multiple OTP secrets and provision those using a QR Code</p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyotp</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="time-based-otps">
+<h3>Time-based OTPs<a class="headerlink" href="#time-based-otps" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">totp</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">TOTP</span><span class="p">(</span><span class="s1">&#39;base32secret3232&#39;</span><span class="p">)</span>
+<span class="n">totp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="c1"># =&gt; &#39;492039&#39;</span>
+
+<span class="c1"># OTP verified for current time</span>
+<span class="n">totp</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="s1">&#39;492039&#39;</span><span class="p">)</span> <span class="c1"># =&gt; True</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">totp</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="s1">&#39;492039&#39;</span><span class="p">)</span> <span class="c1"># =&gt; False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="counter-based-otps">
+<h3>Counter-based OTPs<a class="headerlink" href="#counter-based-otps" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hotp</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">HOTP</span><span class="p">(</span><span class="s1">&#39;base32secret3232&#39;</span><span class="p">)</span>
+<span class="n">hotp</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># =&gt; &#39;260182&#39;</span>
+<span class="n">hotp</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># =&gt; &#39;055283&#39;</span>
+<span class="n">hotp</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="mi">1401</span><span class="p">)</span> <span class="c1"># =&gt; &#39;316439&#39;</span>
+
+<span class="c1"># OTP verified with a counter</span>
+<span class="n">hotp</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="s1">&#39;316439&#39;</span><span class="p">,</span> <span class="mi">1401</span><span class="p">)</span> <span class="c1"># =&gt; True</span>
+<span class="n">hotp</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="s1">&#39;316439&#39;</span><span class="p">,</span> <span class="mi">1402</span><span class="p">)</span> <span class="c1"># =&gt; False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generating-a-secret-key">
+<h3>Generating a Secret Key<a class="headerlink" href="#generating-a-secret-key" title="Permalink to this headline">¶</a></h3>
+<p>A helper function is provided to generate a 16 character base32 secret, compatible with Google Authenticator and other OTP apps:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyotp</span><span class="o">.</span><span class="n">random_base32</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Some applications want the secret key to be formatted as a hex-encoded string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyotp</span><span class="o">.</span><span class="n">random_hex</span><span class="p">()</span>  <span class="c1"># returns a 32-character hex-encoded secret</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="google-authenticator-compatible">
+<h3>Google Authenticator Compatible<a class="headerlink" href="#google-authenticator-compatible" title="Permalink to this headline">¶</a></h3>
+<p>PyOTP works with the Google Authenticator iPhone and Android app, as well as other OTP apps like Authy. PyOTP includes the
+ability to generate provisioning URIs for use with the QR Code scanner built into these MFA client apps:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyotp</span><span class="o">.</span><span class="n">totp</span><span class="o">.</span><span class="n">TOTP</span><span class="p">(</span><span class="s1">&#39;JBSWY3DPEHPK3PXP&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">provisioning_uri</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;alice@google.com&#39;</span><span class="p">,</span> <span class="n">issuer_name</span><span class="o">=</span><span class="s1">&#39;Secure App&#39;</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">&#39;otpauth://totp/Secure%20App:alice</span><span class="si">%40g</span><span class="s1">oogle.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=Secure%20App&#39;</span>
+
+<span class="n">pyotp</span><span class="o">.</span><span class="n">hotp</span><span class="o">.</span><span class="n">HOTP</span><span class="p">(</span><span class="s1">&#39;JBSWY3DPEHPK3PXP&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">provisioning_uri</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;alice@google.com&quot;</span><span class="p">,</span> <span class="n">issuer_name</span><span class="o">=</span><span class="s2">&quot;Secure App&quot;</span><span class="p">,</span> <span class="n">initial_count</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">&#39;otpauth://hotp/Secure%20App:alice</span><span class="si">%40g</span><span class="s1">oogle.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=Secure%20App&amp;counter=0&#39;</span>
+</pre></div>
+</div>
+<p>This URL can then be rendered as a QR Code (for example, using <a class="reference external" href="https://github.com/neocotic/qrious">https://github.com/neocotic/qrious</a>) which can then be scanned
+and added to the users list of OTP credentials.</p>
+<p>Parsing these URLs is also supported:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyotp</span><span class="o">.</span><span class="n">parse_uri</span><span class="p">(</span><span class="s1">&#39;otpauth://totp/Secure%20App:alice</span><span class="si">%40g</span><span class="s1">oogle.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=Secure%20App&#39;</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="n">pyotp</span><span class="o">.</span><span class="n">totp</span><span class="o">.</span><span class="n">TOTP</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0xFFFFFFFF</span><span class="o">&gt;</span>
+
+<span class="n">pyotp</span><span class="o">.</span><span class="n">parse_uri</span><span class="p">(</span><span class="s1">&#39;otpauth://hotp/Secure%20App:alice</span><span class="si">%40g</span><span class="s1">oogle.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=Secure%20App&amp;counter=0&#39;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="o">&lt;</span><span class="n">pyotp</span><span class="o">.</span><span class="n">totp</span><span class="o">.</span><span class="n">HOTP</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0xFFFFFFFF</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="working-example">
+<h3>Working example<a class="headerlink" href="#working-example" title="Permalink to this headline">¶</a></h3>
+<p>Scan the following barcode with your phone’s OTP app (e.g. Google Authenticator):</p>
+<img alt="https://chart.apis.google.com/chart?cht=qr&amp;chs=250x250&amp;chl=otpauth%3A%2F%2Ftotp%2Falice%40google.com%3Fsecret%3DJBSWY3DPEHPK3PXP" src="https://chart.apis.google.com/chart?cht=qr&amp;chs=250x250&amp;chl=otpauth%3A%2F%2Ftotp%2Falice%40google.com%3Fsecret%3DJBSWY3DPEHPK3PXP" />
+<p>Now run the following and compare the output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyotp</span>
+<span class="n">totp</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">TOTP</span><span class="p">(</span><span class="s2">&quot;JBSWY3DPEHPK3PXP&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current OTP:&quot;</span><span class="p">,</span> <span class="n">totp</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="links">
+<h3>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/pyauth/pyotp">Project home page (GitHub)</a></p></li>
+<li><p><a class="reference external" href="https://pyauth.github.io/pyotp/">Documentation</a></p></li>
+<li><p><a class="reference external" href="https://pypi.python.org/pypi/pyotp">Package distribution (PyPI)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/pyauth/pyotp/blob/master/Changes.rst">Change log</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc4226">RFC 4226: HOTP: An HMAC-Based One-Time Password</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc6238">RFC 6238: TOTP: Time-Based One-Time Password Algorithm</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mdp/rotp">ROTP</a> - Original Ruby OTP library by <a class="reference external" href="https://github.com/mdp">Mark Percival</a></p></li>
+<li><p><a class="reference external" href="https://github.com/lelag/otphp">OTPHP</a> - PHP port of ROTP by <a class="reference external" href="https://github.com/lelag">Le Lag</a></p></li>
+<li><p><a class="reference external" href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authentication_Cheat_Sheet.md">OWASP Authentication Cheat Sheet</a></p></li>
+<li><p><a class="reference external" href="https://pages.nist.gov/800-63-3/">NIST SP 800-63-3: Digital Authentication Guideline</a></p></li>
+</ul>
+<p>For new applications:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.w3.org/TR/webauthn/">WebAuthn</a></p></li>
+<li><p><a class="reference external" href="https://github.com/pyauth/pywarp">PyWARP</a></p></li>
+</ul>
+<a class="reference external image-reference" href="https://github.com/pyauth/pyotp/actions"><img alt="https://github.com/pyauth/pyotp/workflows/Python%20package/badge.svg" src="https://github.com/pyauth/pyotp/workflows/Python%20package/badge.svg" /></a>
+<a class="reference external image-reference" href="https://codecov.io/github/pyauth/pyotp?branch=master"><img alt="https://img.shields.io/codecov/c/github/pyauth/pyotp/master.svg" src="https://img.shields.io/codecov/c/github/pyauth/pyotp/master.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/pyotp"><img alt="https://img.shields.io/pypi/v/pyotp.svg" src="https://img.shields.io/pypi/v/pyotp.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/pyotp"><img alt="https://img.shields.io/pypi/l/pyotp.svg" src="https://img.shields.io/pypi/l/pyotp.svg" /></a>
+<a class="reference external image-reference" href="https://pyotp.readthedocs.io/"><img alt="https://readthedocs.org/projects/pyotp/badge/?version=latest" src="https://readthedocs.org/projects/pyotp/badge/?version=latest" /></a>
+</div>
+</div>
+</div>
+<div class="section" id="module-pyotp">
+<span id="api-documentation"></span><h1>API documentation<a class="headerlink" href="#module-pyotp" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="pyotp.parse_uri">
+<code class="sig-prename descclassname">pyotp.</code><code class="sig-name descname">parse_uri</code><span class="sig-paren">(</span><em class="sig-param">uri: str</em><span class="sig-paren">)</span> &#x2192; pyotp.otp.OTP<a class="reference internal" href="_modules/pyotp.html#parse_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.parse_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the provisioning URI for the OTP; works for either TOTP or HOTP.</p>
+<dl class="simple">
+<dt>See also:</dt><dd><p><a class="reference external" href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">https://github.com/google/google-authenticator/wiki/Key-Uri-Format</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> – the hotp/totp URI to parse</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>OTP object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-pyotp.totp"></span><dl class="class">
+<dt id="pyotp.totp.TOTP">
+<em class="property">class </em><code class="sig-prename descclassname">pyotp.totp.</code><code class="sig-name descname">TOTP</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">digits: int = 6</em>, <em class="sig-param">digest: Any = &lt;built-in function openssl_sha1&gt;</em>, <em class="sig-param">name: Optional[str] = None</em>, <em class="sig-param">issuer: Optional[str] = None</em>, <em class="sig-param">interval: int = 30</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyotp/totp.html#TOTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for time-based OTP counters.</p>
+<dl class="method">
+<dt id="pyotp.totp.TOTP.at">
+<code class="sig-name descname">at</code><span class="sig-paren">(</span><em class="sig-param">for_time: Union[int, datetime.datetime], counter_offset: int = 0</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/totp.html#TOTP.at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP.at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepts either a Unix timestamp integer or a datetime object.</p>
+<p>To get the time until the next timecode change (seconds until the current OTP expires), use this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">totp</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">TOTP</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">time_remaining</span> <span class="o">=</span> <span class="n">totp</span><span class="o">.</span><span class="n">interval</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">%</span> <span class="n">totp</span><span class="o">.</span><span class="n">interval</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>for_time</strong> – the time to generate an OTP for</p></li>
+<li><p><strong>counter_offset</strong> – the amount of ticks to add to the time counter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>OTP value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.totp.TOTP.now">
+<code class="sig-name descname">now</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/totp.html#TOTP.now"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the current time OTP</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>OTP value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.totp.TOTP.provisioning_uri">
+<code class="sig-name descname">provisioning_uri</code><span class="sig-paren">(</span><em class="sig-param">name: Optional[str] = None</em>, <em class="sig-param">issuer_name: Optional[str] = None</em>, <em class="sig-param">image: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/totp.html#TOTP.provisioning_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP.provisioning_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the provisioning URI for the OTP.  This can then be
+encoded in a QR Code and used to provision an OTP app like
+Google Authenticator.</p>
+<dl class="simple">
+<dt>See also:</dt><dd><p><a class="reference external" href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">https://github.com/google/google-authenticator/wiki/Key-Uri-Format</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.totp.TOTP.timecode">
+<code class="sig-name descname">timecode</code><span class="sig-paren">(</span><em class="sig-param">for_time: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/pyotp/totp.html#TOTP.timecode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP.timecode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accepts either a timezone naive (<cite>for_time.tzinfo is None</cite>) or
+a timezone aware datetime as argument and returns the
+corresponding counter value (timecode).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.totp.TOTP.verify">
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">otp: str</em>, <em class="sig-param">for_time: Optional[datetime.datetime] = None</em>, <em class="sig-param">valid_window: int = 0</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/pyotp/totp.html#TOTP.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.totp.TOTP.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies the OTP passed in against the current time OTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>otp</strong> – the OTP to check against</p></li>
+<li><p><strong>for_time</strong> – Time to check OTP at (defaults to now)</p></li>
+<li><p><strong>valid_window</strong> – extends the validity to this many counter ticks before and after the current one</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if verification succeeded, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pyotp.hotp"></span><dl class="class">
+<dt id="pyotp.hotp.HOTP">
+<em class="property">class </em><code class="sig-prename descclassname">pyotp.hotp.</code><code class="sig-name descname">HOTP</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">digits: int = 6</em>, <em class="sig-param">digest: Any = &lt;built-in function openssl_sha1&gt;</em>, <em class="sig-param">name: Optional[str] = None</em>, <em class="sig-param">issuer: Optional[str] = None</em>, <em class="sig-param">initial_count: int = 0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyotp/hotp.html#HOTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.hotp.HOTP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for HMAC-based OTP counters.</p>
+<dl class="method">
+<dt id="pyotp.hotp.HOTP.at">
+<code class="sig-name descname">at</code><span class="sig-paren">(</span><em class="sig-param">count: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/hotp.html#HOTP.at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.hotp.HOTP.at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the OTP for the given count.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>count</strong> – the OTP HMAC counter</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>OTP</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.hotp.HOTP.provisioning_uri">
+<code class="sig-name descname">provisioning_uri</code><span class="sig-paren">(</span><em class="sig-param">name: Optional[str] = None</em>, <em class="sig-param">initial_count: Optional[int] = None</em>, <em class="sig-param">issuer_name: Optional[str] = None</em>, <em class="sig-param">image: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/hotp.html#HOTP.provisioning_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.hotp.HOTP.provisioning_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the provisioning URI for the OTP.  This can then be
+encoded in a QR Code and used to provision an OTP app like
+Google Authenticator.</p>
+<dl class="simple">
+<dt>See also:</dt><dd><p><a class="reference external" href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">https://github.com/google/google-authenticator/wiki/Key-Uri-Format</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of the user account</p></li>
+<li><p><strong>initial_count</strong> – starting HMAC counter value, defaults to 0</p></li>
+<li><p><strong>issuer_name</strong> – the name of the OTP issuer; this will be the
+organization title of the OTP entry in Authenticator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>provisioning URI</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyotp.hotp.HOTP.verify">
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">otp: str</em>, <em class="sig-param">counter: int</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/pyotp/hotp.html#HOTP.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.hotp.HOTP.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies the OTP passed in against the current counter OTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>otp</strong> – the OTP to check against</p></li>
+<li><p><strong>counter</strong> – the OTP HMAC counter</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-pyotp.utils"></span><dl class="function">
+<dt id="pyotp.utils.build_uri">
+<code class="sig-prename descclassname">pyotp.utils.</code><code class="sig-name descname">build_uri</code><span class="sig-paren">(</span><em class="sig-param">secret: str</em>, <em class="sig-param">name: str</em>, <em class="sig-param">initial_count: Optional[int] = None</em>, <em class="sig-param">issuer: Optional[str] = None</em>, <em class="sig-param">algorithm: Optional[str] = None</em>, <em class="sig-param">digits: Optional[int] = None</em>, <em class="sig-param">period: Optional[int] = None</em>, <em class="sig-param">image: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/pyotp/utils.html#build_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.utils.build_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the provisioning URI for the OTP; works for either TOTP or HOTP.</p>
+<p>This can then be encoded in a QR Code and used to provision the Google
+Authenticator app.</p>
+<p>For module-internal use.</p>
+<dl class="simple">
+<dt>See also:</dt><dd><p><a class="reference external" href="https://github.com/google/google-authenticator/wiki/Key-Uri-Format">https://github.com/google/google-authenticator/wiki/Key-Uri-Format</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secret</strong> – the hotp/totp secret used to generate the URI</p></li>
+<li><p><strong>name</strong> – name of the account</p></li>
+<li><p><strong>initial_count</strong> – starting counter value, defaults to None.
+If none, the OTP type will be assumed as TOTP.</p></li>
+<li><p><strong>issuer</strong> – the name of the OTP issuer; this will be the
+organization title of the OTP entry in Authenticator</p></li>
+<li><p><strong>algorithm</strong> – the algorithm used in the OTP generation.</p></li>
+<li><p><strong>digits</strong> – the length of the OTP generated code.</p></li>
+<li><p><strong>period</strong> – the number of seconds the OTP generator is set to
+expire every code.</p></li>
+<li><p><strong>image</strong> – optional logo image url</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>provisioning uri</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyotp.utils.strings_equal">
+<code class="sig-prename descclassname">pyotp.utils.</code><code class="sig-name descname">strings_equal</code><span class="sig-paren">(</span><em class="sig-param">s1: str</em>, <em class="sig-param">s2: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/pyotp/utils.html#strings_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyotp.utils.strings_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timing-attack resistant string comparison.</p>
+<p>Normal comparison using == will short-circuit on the first mismatching
+character. This avoids that by scanning the whole string, though we
+still reveal to a timing attack whether the strings are the same
+length.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+            
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyOTP  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright PyOTP contributors. Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>
